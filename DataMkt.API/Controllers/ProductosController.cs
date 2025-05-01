@@ -27,6 +27,34 @@ public class ProductosController : ControllerBase
         return Ok(productos);
     }
 
+    [HttpGet("con-stock")]
+    public async Task<ActionResult> GetStockPorSucursal()
+    {
+        var stock = await _context.StocksPorSucursal
+            .Include(s => s.Producto)
+            .Include(s => s.Sucursal)
+            .Select(s => new
+            {
+                Producto = s.Producto!.Nombre,
+                Sucursal = s.Sucursal!.Nombre,
+                Stock = s.Stock
+            })
+            .ToListAsync();
+
+        return Ok(stock);
+    }
+    
+    /// <summary>
+    /// Crea un nuevo producto.
+    /// </summary>
+    [HttpPost]
+    public async Task<ActionResult<Producto>> CreateProducto([FromBody] Producto producto)
+    {
+        _context.Productos.Add(producto);
+        await _context.SaveChangesAsync();
+        return CreatedAtAction(nameof(GetProductos), new { id = producto.Id }, producto);
+    }
+    
     /// <summary>
     /// Actualiza el stock de un producto por ID.
     /// </summary>
