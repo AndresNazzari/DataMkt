@@ -101,16 +101,7 @@ GET    /api/productos/con-stock
 ```bash
 dotnet ef migrations add NombreMigracion --project DataMkt.Infrastructure --startup-project DataMkt.API
 ```
-Aplicar todas las migraciones a la base de datos:
-
-## 🗄️ Migraciones con Entity Framework Core
-
-- Crear una nueva migración:
-
-```bash
-dotnet ef migrations add NombreMigracion --project DataMkt.Infrastructure --startup-project DataMkt.API
-```
--Aplicar todas las migraciones a la base de datos:
+- Aplicar todas las migraciones a la base de datos:
 
 ```bash
 dotnet ef database update --project DataMkt.Infrastructure --startup-project DataMkt.APIdotnet ef database update --project DataMkt.Infrastructure --startup-project DataMkt.API
