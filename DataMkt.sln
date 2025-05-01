@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataMkt.Domain", "DataMkt.Domain\DataMkt.Domain.csproj", "{EFC257F9-4335-4CC2-91E8-4D349553FBEE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataMkt.Application", "DataMkt.Application\DataMkt.Application.csproj", "{3127E103-A441-47D0-B801-AE0DB4AE8F5F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataMkt.Infrastructure", "DataMkt.Infrastructure\DataMkt.Infrastructure.csproj", "{D9F13FFF-92EE-425F-ADAA-4B54ABC9B422}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataMkt.API", "DataMkt.API\DataMkt.API.csproj", "{B7DD9E53-8073-46C8-998D-DC42AD4C1797}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EFC257F9-4335-4CC2-91E8-4D349553FBEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFC257F9-4335-4CC2-91E8-4D349553FBEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFC257F9-4335-4CC2-91E8-4D349553FBEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFC257F9-4335-4CC2-91E8-4D349553FBEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3127E103-A441-47D0-B801-AE0DB4AE8F5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3127E103-A441-47D0-B801-AE0DB4AE8F5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3127E103-A441-47D0-B801-AE0DB4AE8F5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3127E103-A441-47D0-B801-AE0DB4AE8F5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9F13FFF-92EE-425F-ADAA-4B54ABC9B422}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9F13FFF-92EE-425F-ADAA-4B54ABC9B422}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9F13FFF-92EE-425F-ADAA-4B54ABC9B422}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9F13FFF-92EE-425F-ADAA-4B54ABC9B422}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7DD9E53-8073-46C8-998D-DC42AD4C1797}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7DD9E53-8073-46C8-998D-DC42AD4C1797}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7DD9E53-8073-46C8-998D-DC42AD4C1797}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7DD9E53-8073-46C8-998D-DC42AD4C1797}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
