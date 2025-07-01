@@ -1,24 +1,29 @@
 ﻿using DataMkt.Application.Producto.Dto;
 using DataMkt.Application.Producto.Services;
 using DataMkt.Domain.Entities;
-using DataMkt.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DataMkt.API.Controllers;
 
 /// <summary>
 /// Controlador que gestiona los productos y el stock por sucursal.
 /// </summary>
+/// <remarks>
+/// Todas las respuestas se devuelven en <c>application/json</c>.
+///
+/// Rutas básicas:
+/// * <c>GET    /api/Productos</c>               – Lista de productos.
+/// * <c>GET    /api/Productos/con-stock</c>     – Stock por sucursal.
+/// * <c>POST   /api/Productos</c>               – Crear producto.
+/// * <c>PUT    /api/Productos/stock</c>         – Actualizar stock en sucursal.
+/// </remarks>
 [ApiController]
 [Route("api/[controller]")]
 public class ProductosController : ControllerBase
 {
     private readonly IProductoService _service;
 
-    /// <summary>
-    /// Constructor del controlador de productos.
-    /// </summary>
+    /// <inheritdoc />
     public ProductosController(IProductoService service)
     {
         _service = service;
@@ -28,12 +33,12 @@ public class ProductosController : ControllerBase
     /// Obtiene todos los productos registrados en el sistema.
     /// </summary>
     /// <remarks>
-    /// Este endpoint devuelve todos los productos disponibles en la base de datos.
+    /// Devuelve la colección completa ordenada alfabéticamente por nombre.
     /// </remarks>
-    /// <returns>Lista de productos</returns>
+    /// <returns>Colección de <see cref="ProductoDto"/>.</returns>
     /// <response code="200">Lista de productos obtenida correctamente.</response>
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<Producto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<ProductoDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<Producto>>> GetProductos()
     {
         var productos = await _service.GetProductosAsync();
@@ -41,15 +46,16 @@ public class ProductosController : ControllerBase
     }
 
     /// <summary>
-    /// Obtiene el stock de productos por sucursal.
+    /// Obtiene el stock disponible de cada producto por sucursal.
     /// </summary>
     /// <remarks>
-    /// Devuelve una lista con el nombre del producto, la sucursal y la cantidad de stock disponible en cada una.
+    /// Cada elemento incluye el nombre del producto, la sucursal y la cantidad
+    /// disponible. Útil para reportes de inventario.
     /// </remarks>
-    /// <returns>Listado de stock por sucursal</returns>
+    /// <returns>Colección de <see cref="StockPorSucursalDto"/>.</returns>
     /// <response code="200">Listado obtenido correctamente.</response>
     [HttpGet("con-stock")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<StockPorSucursalDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult> GetStockPorSucursal()
     {
         var stock = await _service.GetStockPorSucursalAsync();
@@ -59,12 +65,16 @@ public class ProductosController : ControllerBase
     /// <summary>
     /// Crea un nuevo producto.
     /// </summary>
-    /// <param name="producto">Objeto producto a registrar.</param>
-    /// <returns>Producto creado con su ID generado.</returns>
-    /// <response code="201">Producto creado correctamente.</response>
-    /// <response code="400">Error de validación en los datos del producto.</response>
+    /// <param name="producto">
+    /// Payload con nombre y precio; el <c>Id</c> se genera de forma automática.
+    /// </param>
+    /// <returns>Producto creado con su <c>Id</c> asignado.</returns>
+    /// <response code="201">
+    /// Producto creado correctamente; cabecera <c>Location</c> apunta al recurso.
+    /// </response>
+    /// <response code="400">Error de validación en los datos enviados.</response>
     [HttpPost]
-    [ProducesResponseType(typeof(Producto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProductoDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<Producto>> CreateProducto([FromBody] ProductoDto producto)
     {
@@ -73,23 +83,26 @@ public class ProductosController : ControllerBase
     }
 
     /// <summary>
-    /// Actualiza el stock de un producto en una sucursal.
+    /// Actualiza (incrementa o reduce) el stock de un producto en una sucursal.
     /// </summary>
     /// <remarks>
-    /// Este endpoint permite incrementar o reducir el stock de un producto en una sucursal específica.
-    /// Si no existe el registro de stock para esa sucursal, se crea automáticamente.
+    /// * Si el registro de stock no existe, se crea con la cantidad indicada. <br/>
+    /// * La <c>Cantidad</c> puede ser negativa para descontar. <br/>
+    /// * El campo es rechazado si el resultado final sería negativo.
     /// </remarks>
-    /// <param name="dto">DTO con el ID del producto, ID de la sucursal y cantidad a modificar.</param>
-    /// <returns>Respuesta sin contenido en caso de éxito.</returns>
-    /// <response code="204">Stock actualizado correctamente.</response>
-    /// <response code="400">Error de validación en los datos enviados.</response>
+    /// <param name="dto">
+    /// DTO con <c>ProductoId</c>, <c>SucursalId</c> y <c>Cantidad</c> a ajustar.
+    /// </param>
+    /// <response code="204">Stock actualizado o insertado correctamente.</response>
+    /// <response code="400">Datos inválidos (por ejemplo, stock negativo).</response>
+    /// <response code="404">Producto o sucursal no encontrados.</response>
     [HttpPut("stock")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ActualizarStockPorSucursal([FromBody] ActualizarStockSucursalDto dto)
     {
         await _service.ActualizarStockAsync(dto);
         return NoContent();
     }
-
 }
