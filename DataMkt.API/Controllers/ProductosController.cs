@@ -1,4 +1,5 @@
 ﻿using DataMkt.Application.Producto.Dto;
+using DataMkt.Application.Producto.Services;
 using DataMkt.Domain.Entities;
 using DataMkt.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
@@ -13,14 +14,14 @@ namespace DataMkt.API.Controllers;
 [Route("api/[controller]")]
 public class ProductosController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IProductoService _service;
 
     /// <summary>
     /// Constructor del controlador de productos.
     /// </summary>
-    public ProductosController(AppDbContext context)
+    public ProductosController(IProductoService service)
     {
-        _context = context;
+        _service = service;
     }
 
     /// <summary>
@@ -35,7 +36,7 @@ public class ProductosController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<Producto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<Producto>>> GetProductos()
     {
-        var productos = await _context.Productos.ToListAsync();
+        var productos = await _service.GetProductosAsync();
         return Ok(productos);
     }
 
@@ -51,17 +52,7 @@ public class ProductosController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> GetStockPorSucursal()
     {
-        var stock = await _context.StocksPorSucursal
-            .Include(s => s.Producto)
-            .Include(s => s.Sucursal)
-            .Select(s => new
-            {
-                Producto = s.Producto!.Nombre,
-                Sucursal = s.Sucursal!.Nombre,
-                Stock = s.Stock
-            })
-            .ToListAsync();
-
+        var stock = await _service.GetStockPorSucursalAsync();
         return Ok(stock);
     }
     
@@ -75,11 +66,10 @@ public class ProductosController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(Producto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Producto>> CreateProducto([FromBody] Producto producto)
+    public async Task<ActionResult<Producto>> CreateProducto([FromBody] ProductoDto producto)
     {
-        _context.Productos.Add(producto);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetProductos), new { id = producto.Id }, producto);
+        var created = await _service.CreateProductoAsync(producto);
+        return CreatedAtAction(nameof(GetProductos), new { id = created.Id }, created);
     }
 
     /// <summary>
@@ -98,28 +88,7 @@ public class ProductosController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ActualizarStockPorSucursal([FromBody] ActualizarStockSucursalDto dto)
     {
-        var registroStock = await _context.StocksPorSucursal
-            .FirstOrDefaultAsync(s =>
-                s.ProductoId == dto.ProductoId && s.SucursalId == dto.SucursalId);
-
-        if (registroStock is null)
-        {
-            // Crear el registro si no existe
-            registroStock = new StockPorSucursal
-            {
-                ProductoId = dto.ProductoId,
-                SucursalId = dto.SucursalId,
-                Stock = dto.Cantidad
-            };
-
-            _context.StocksPorSucursal.Add(registroStock);
-        }
-        else
-        {
-            registroStock.Stock += dto.Cantidad;
-        }
-
-        await _context.SaveChangesAsync();
+        await _service.ActualizarStockAsync(dto);
         return NoContent();
     }
 
