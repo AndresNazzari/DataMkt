@@ -1,4 +1,5 @@
 using DataMkt.Infrastructure;
+using OfficeOpenXml;
 
 namespace DataMkt.API;
 
@@ -6,6 +7,9 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        var license = new EPPlusLicense();
+        license.SetNonCommercialPersonal("Andres J. Nazzari");
+        
         var builder = WebApplication.CreateBuilder(args);
 
         // Agregar servicios de Infraestructura (DbContext)
