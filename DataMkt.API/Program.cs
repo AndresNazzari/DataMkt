@@ -18,8 +18,12 @@ public class Program
         // Servicios web
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-
+        builder.Services.AddSwaggerGen(c =>
+        {
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, "DataMkt.API.xml");
+            c.IncludeXmlComments(xmlPath);
+        });
+        
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.

@@ -28,8 +28,17 @@ public class VentasController : ControllerBase
     /// <summary>
     /// Importa ventas desde un archivo CSV.
     /// </summary>
+    /// <remarks>
+    /// Espera un archivo .csv con columnas como Fecha, ProductoId, SucursalId, Cantidad, Precio.
+    /// Este archivo es procesado y almacenado, disparando un evento de generación de reporte.
+    /// </remarks>
+    /// <param name="request">Archivo CSV a importar.</param>
+    /// <response code="200">Ventas importadas correctamente.</response>
+    /// <response code="400">Archivo inválido o con formato incorrecto.</response>
     [HttpPost("importar")]
     [Consumes("multipart/form-data")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ImportarVentas([FromForm] ImportarVentasRequest request)
     {
         if (request.File is null || request.File.Length == 0)
