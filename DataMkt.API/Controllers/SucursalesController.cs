@@ -1,7 +1,7 @@
-﻿using DataMkt.Domain.Entities;
-using DataMkt.Infrastructure.Persistence;
+﻿using DataMkt.Application.Sucursal.Dto;
+using DataMkt.Application.Sucursal.Services;
+using DataMkt.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DataMkt.API.Controllers;
 
@@ -12,11 +12,11 @@ namespace DataMkt.API.Controllers;
 [Route("api/[controller]")]
 public class SucursalesController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly ISucursalService _service;
 
-    public SucursalesController(AppDbContext context)
+    public SucursalesController(ISucursalService service)
     {
-        _context = context;
+        _service = service;
     }
 
     /// <summary>
@@ -28,27 +28,24 @@ public class SucursalesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<Sucursal>>> GetSucursales()
     {
-        var sucursales = await _context.Sucursales.ToListAsync();
+        var sucursales = await _service.GetSucursalesAsync();
         return Ok(sucursales);
     }
 
     /// <summary>
     /// Crea una nueva sucursal.
     /// </summary>
-    /// <param name="sucursal">Sucursal a crear.</param>
-    /// <param name="nuevaSucursal"></param>
+    /// <param name="dto">Sucursal a crear.</param>
     /// <returns>La sucursal creada.</returns>
     /// <response code="201">Sucursal creada exitosamente.</response>
     /// <response code="400">Datos inválidos para crear la sucursal.</response>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<Sucursal>> CreateSucursal([FromBody] Sucursal sucursal)
+    public async Task<ActionResult<Sucursal>> CreateSucursal([FromBody] SucursalDto dto)
     {
-        _context.Sucursales.Add(sucursal);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetSucursales), new { id = sucursal.Id }, sucursal);
+        var created = await _service.CreateSucursalAsync(dto);
+        return CreatedAtAction(nameof(GetSucursales), new { id = created.Id }, created);
     }
     
     /// <summary>
@@ -62,13 +59,7 @@ public class SucursalesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteSucursal(int id)
     {
-        var sucursal = await _context.Sucursales.FindAsync(id);
-        if (sucursal == null)
-            return NotFound("Sucursal no encontrada.");
-
-        _context.Sucursales.Remove(sucursal);
-        await _context.SaveChangesAsync();
-
+        await _service.DeleteSucursalAsync(id);
         return NoContent();
     }
 }
