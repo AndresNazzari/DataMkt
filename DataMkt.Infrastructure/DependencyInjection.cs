@@ -28,6 +28,7 @@ public static class DependencyInjection
 
         // Strategy por defecto (CSV)
         services.AddScoped<IVentasImporterStrategy, CsvVentasImporter>();
+        services.AddScoped<IVentasImporterStrategy, JsonVentasImporter>();
 
         // Event handlers
         services.AddScoped<IEventPublisher, InMemoryEventPublisher>();

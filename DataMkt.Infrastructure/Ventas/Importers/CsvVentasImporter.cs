@@ -8,6 +8,8 @@ namespace DataMkt.Infrastructure.Ventas.Importers;
 
 public class CsvVentasImporter  : IVentasImporterStrategy
 {
+    public string Formato => "csv";
+    
     public async Task<List<VentaImportadaDto>> ImportarVentasAsync(Stream sourceStream)
     {
         using var reader = new StreamReader(sourceStream);

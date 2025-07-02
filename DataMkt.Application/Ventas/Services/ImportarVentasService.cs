@@ -11,35 +11,48 @@ namespace DataMkt.Application.Ventas.Services;
 public class ImportarVentasService
 {
     private readonly IVentaRepository _repository;
-    private readonly IVentasImporterStrategy _importer;
+    private readonly IEnumerable<IVentasImporterStrategy> _importers;
     private readonly ILogger<ImportarVentasService> _logger;
     private readonly IEventPublisher _eventPublisher;
 
     public ImportarVentasService(
         IVentaRepository repository,
-        IVentasImporterStrategy importer,
+        IEnumerable<IVentasImporterStrategy> importers,
         ILogger<ImportarVentasService> logger,
         IEventPublisher eventPublisher)
     {
-        _repository = repository;
-        _importer = importer;
-        _logger = logger;
+        _repository= repository;
+        _importers= importers;
+        _logger= logger;
         _eventPublisher = eventPublisher;
     }
 
-    public async Task ImportarAsync(Stream stream)
+    /// <param name="stream"></param>
+    /// <param name="formato">
+    /// Identificador de formato (“csv”, “json”, …) recibido en la petición.
+    /// </param>
+    public async Task ImportarAsync(Stream stream, string formato)
     {
-        var ventasImportadas = await _importer.ImportarVentasAsync(stream);
+        // 1) Seleccionar la estrategia que admite el formato solicitado
+        var importer = _importers.FirstOrDefault(i =>
+            string.Equals(i.Formato, formato, StringComparison.OrdinalIgnoreCase));
+
+        if (importer is null)
+        {
+            throw new NotSupportedException($"Formato '{formato}' no soportado.");
+        }
+
+        var ventasImportadas = await importer.ImportarVentasAsync(stream);
 
         var ventas = ventasImportadas
-            .Where(dto => dto.Cantidad > 0 && dto.PrecioUnitario > 0)
-            .Select(dto => new Venta
+            .Where(d => d.Cantidad > 0 && d.PrecioUnitario > 0)
+            .Select(d => new Venta
             {
-                Fecha = dto.Fecha,
-                ProductoId = dto.ProductoId,
-                SucursalId = dto.SucursalId,
-                Cantidad = dto.Cantidad,
-                PrecioUnitario = dto.PrecioUnitario
+                Fecha = d.Fecha,
+                ProductoId = d.ProductoId,
+                SucursalId = d.SucursalId,
+                Cantidad = d.Cantidad,
+                PrecioUnitario= d.PrecioUnitario
             })
             .ToList();
 
@@ -49,9 +62,6 @@ public class ImportarVentasService
         await _eventPublisher.PublishAsync(new VentasImportadasEvent());
         _logger.LogInformation("📣 Evento publicado: VentasImportadasEvent");
     }
-    
-    public async Task<List<VentaDto>> ObtenerVentasAsync()
-    {
-        return await _repository.GetVentasAsync();
-    }
+
+    public Task<List<VentaDto>> ObtenerVentasAsync() => _repository.GetVentasAsync();
 }

@@ -69,10 +69,14 @@ public class VentasController : ControllerBase
         {
             return BadRequest("Debe subir un archivo CSV válido.");
         }
-
+        
+        var extension = Path.GetExtension(request.File.FileName)
+            .TrimStart('.')
+            .ToLowerInvariant();
+        
         await using var stream = request.File.OpenReadStream();
-        await _importarVentasService.ImportarAsync(stream);
+        await _importarVentasService.ImportarAsync(stream, extension);
 
-        return Ok("Ventas importadas correctamente.");
+        return Ok($"Ventas importadas correctamente desde {extension.ToUpper()}.");
     }
 }
