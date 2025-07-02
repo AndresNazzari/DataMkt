@@ -40,25 +40,22 @@ public class VentasController : ControllerBase
         return Ok(ventas);
     }
     
-    /// <summary>Importa ventas desde un archivo CSV.</summary>
+    /// <summary>Importa ventas desde un archivo CSV o JSON.</summary>
     /// <remarks>
-    /// * El archivo debe ser **multipart/form-data**, con la parte llamada
-    ///   <c>file</c>. <br/>
-    /// * Columnas requeridas: <c>Fecha</c>, <c>ProductoId</c>, <c>SucursalId</c>,
-    ///   <c>Cantidad</c>, <c>PrecioUnitario</c>. <br/>
-    /// * Al finalizar se lanza la generación del reporte de ventas.
-    ///
-    /// **Ejemplo cURL**  
-    /// <c>
-    /// curl -F "file=@ventas_julio.csv" https://tu-api.com/api/Ventas/importar
-    /// </c>
+    /// * El archivo debe enviarse como **multipart/form-data** con la parte
+    ///   llamada <c>file</c>. <br/>
+    /// * Extensiones admitidas: <c>.csv</c> y <c>.json</c>. <br/>
+    /// * Columnas / propiedades requeridas: <c>Fecha</c>, <c>ProductoId</c>,
+    ///   <c>SucursalId</c>, <c>Cantidad</c>, <c>PrecioUnitario</c>. <br/>
+    /// * Al finalizar se publica <c>VentasImportadasEvent</c>, lo que dispara
+    ///   la generación automática del reporte de ventas.
     /// </remarks>
     /// <param name="request">
-    /// Form-data con el archivo CSV a procesar.
+    /// Form-data con el archivo CSV/JSON a procesar.
     /// </param>
     /// <returns>Mensaje de confirmación.</returns>
     /// <response code="200">Ventas importadas correctamente.</response>
-    /// <response code="400">Archivo faltante o con formato incorrecto.</response>
+    /// <response code="400">Archivo faltante o con formato no admitido.</response>
     [HttpPost("importar")]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]

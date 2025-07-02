@@ -1,6 +1,0 @@
-@DataMkt.API_HostAddress = http://localhost:5122
-
-GET {{DataMkt.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

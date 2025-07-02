@@ -26,4 +26,8 @@
       <ProjectReference Include="..\DataMkt.Domain\DataMkt.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Reportes\" />
+    </ItemGroup>
+
 </Project>
