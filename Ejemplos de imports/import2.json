@@ -1,0 +1,23 @@
+[
+  {
+    "Fecha": "2025-07-01",
+    "ProductoId": 1,
+    "SucursalId": 1,
+    "Cantidad": 5,
+    "PrecioUnitario": 120.5
+  },
+  {
+    "Fecha": "2025-07-01",
+    "ProductoId": 2,
+    "SucursalId": 1,
+    "Cantidad": 2,
+    "PrecioUnitario": 89.99
+  },
+  {
+    "Fecha": "2025-07-02",
+    "ProductoId": 3,
+    "SucursalId": 2,
+    "Cantidad": 10,
+    "PrecioUnitario": 15.0
+  }
+]

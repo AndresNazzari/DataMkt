@@ -12,6 +12,7 @@ riderModule.iml
 # dotenv files
 .env
 
+.idea
 # User-specific files
 *.rsuser
 *.suo

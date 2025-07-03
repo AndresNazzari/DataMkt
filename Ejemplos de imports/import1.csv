@@ -1,0 +1,4 @@
+Fecha,ProductoId,SucursalId,Cantidad,PrecioUnitario
+2025-07-01,1,1,5,120.5
+2025-07-01,2,1,2,89.99
+2025-07-02,3,2,10,15.0
