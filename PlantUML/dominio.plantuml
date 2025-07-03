@@ -1,0 +1,29 @@
+@startuml
+skinparam classAttributeIconSize 0
+title Dominio DataMkt
+
+class Producto {
+  +nombre : string
+  +precio : decimal
+}
+
+class Sucursal {
+  +nombre : string
+}
+
+class StockPorSucursal {
+  +stock : int
+}
+
+class Venta {
+  +fecha : DateTime
+  +cantidad : int
+  +precioUnitario : decimal
+}
+
+Producto  "1" o-- "0..*" StockPorSucursal : inventario
+Sucursal  "1" o-- "0..*" StockPorSucursal : inventario
+
+Producto  "1" o-- "0..*" Venta            : ventas
+Sucursal  "1" o-- "0..*" Venta            : ventas
+@enduml

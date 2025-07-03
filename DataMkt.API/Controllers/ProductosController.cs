@@ -66,7 +66,7 @@ public class ProductosController : ControllerBase
     /// Crea un nuevo producto.
     /// </summary>
     /// <param name="producto">
-    /// Payload con nombre y precio; el <c>Id</c> se genera de forma automática.
+    /// Payload con nombre y precio
     /// </param>
     /// <returns>Producto creado con su <c>Id</c> asignado.</returns>
     /// <response code="201">

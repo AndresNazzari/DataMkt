@@ -1,4 +1,6 @@
-﻿namespace DataMkt.Application.Producto.Dto;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DataMkt.Application.Producto.Dto;
 
 
 /// <summary>
@@ -23,13 +25,16 @@ public record ProductoDto
 {
     /// <summary>Identificador único del producto.</summary>
     /// <example>5</example>
+    [Required]
     public int Id { get; init; }
 
     /// <summary>Nombre descriptivo del producto.</summary>
     /// <example>Camiseta básica</example>
+    [Required]
     public string Nombre { get; init; } = string.Empty;
 
     /// <summary>Precio de venta al público (moneda por defecto del sistema).</summary>
     /// <example>19.99</example>
+    [Required]
     public decimal Precio { get; init; }
 };

@@ -1,0 +1,95 @@
+@startuml
+skinparam componentStyle rectangle
+title Arquitectura Clean – DataMkt
+
+'------------- Capa API -------------
+package "API" {
+  class ProductosController <<Controller>> {
+    +GetProductos() : IActionResult
+    +GetStockPorSucursal() : IActionResult
+    +CreateProducto(dto : ProductoDto) : IActionResult
+    +ActualizarStock(dto : ActualizarStockSucursalDto) : IActionResult
+  }
+
+  class SucursalesController <<Controller>> {
+    +GetSucursales() : IActionResult
+    +CreateSucursal(dto : SucursalDto) : IActionResult
+    +DeleteSucursal(id : int) : IActionResult
+  }
+
+  class VentasController <<Controller>>
+  class ReportesController <<Controller>>
+}
+
+'--------- Capa Application ---------
+package "Application" {
+  interface IProductoService {
+    +GetProductosAsync() : Task<IEnumerable<ProductoDto>>
+    +GetStockPorSucursalAsync() : Task<IEnumerable<StockPorSucursalDto>>
+    +CreateProductoAsync(dto : ProductoDto) : Task<ProductoDto>
+    +ActualizarStockAsync(dto : ActualizarStockSucursalDto) : Task
+  }
+  class ProductoService <<Service>>
+  IProductoService <|.. ProductoService
+
+  interface ISucursalService {
+    +GetSucursalesAsync() : Task<IEnumerable<SucursalDto>>
+    +CreateSucursalAsync(dto : SucursalDto) : Task<SucursalDto>
+    +DeleteSucursalAsync(id : int) : Task
+  }
+  class SucursalService <<Service>>
+  ISucursalService <|.. SucursalService
+}
+
+'----------- Capa Domain -----------
+package "Domain" {
+  interface IProductoRepository {
+    +GetAllAsync() : Task<IEnumerable<Producto>>
+    +AddAsync(prod : Producto) : Task<Producto>
+    +GetByIdAsync(id : int) : Task<Producto?>
+  }
+
+  interface ISucursalRepository {
+    +GetAllAsync() : Task<IEnumerable<Sucursal>>
+    +GetByIdAsync(id : int) : Task<Sucursal?>
+    +AddAsync(suc : Sucursal) : Task<Sucursal>
+    +RemoveAsync(suc : Sucursal) : Task
+    +SaveChangesAsync() : Task
+  }
+
+  interface IStockPorSucursalRepository {
+    +GetAllWithIncludesAsync() : Task<IEnumerable<StockPorSucursal>>
+    +FindAsync(prodId : int, sucId : int) : Task<StockPorSucursal?>
+    +AddAsync(stock : StockPorSucursal) : Task
+    +SaveChangesAsync() : Task
+  }
+
+  class Producto
+  class Sucursal
+  class StockPorSucursal
+}
+
+'-------- Capa Infrastructure -------
+package "Infrastructure" {
+  class ProductoRepository <<Repository>>
+  IProductoRepository <|.. ProductoRepository
+
+  class SucursalRepository <<Repository>>
+  ISucursalRepository <|.. SucursalRepository
+
+  class StockPorSucursalRepository <<Repository>>
+  IStockPorSucursalRepository <|.. StockPorSucursalRepository
+}
+
+'-------- Dependencias --------------
+ProductosController  ..>  IProductoService
+SucursalesController ..>  ISucursalService
+
+ProductoService      ..>  IProductoRepository
+ProductoService      ..>  IStockPorSucursalRepository
+SucursalService      ..>  ISucursalRepository
+
+ProductoRepository         ..> Producto
+SucursalRepository         ..> Sucursal
+StockPorSucursalRepository ..> StockPorSucursal
+@enduml
